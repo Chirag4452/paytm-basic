@@ -154,7 +154,7 @@ router.get("/me", authMiddleware, async (req, res) => {
         });
         if (!user) {
             return res.status(404).json({
-                messahe: "User not found"
+                message: "User not found"
             });
         }
         return res.json({

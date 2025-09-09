@@ -4,7 +4,13 @@ const mongoUri = process.env.MONGODB_URI;
 if (!mongoUri) {
     throw new Error("MONGODB_URI is not set");
 }
-mongoose.connect(mongoUri);
+
+mongoose.connect(mongoUri)
+    .then(() => console.log("Connected to MongoDB"))
+    .catch(err => {
+        console.error("MongoDB connection error:", err);
+        process.exit(1);
+    });
 
 const userSchema = new mongoose.Schema({
     username: String,
