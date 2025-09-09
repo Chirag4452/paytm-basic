@@ -6,7 +6,24 @@ if (!mongoUri) {
 }
 
 mongoose.connect(mongoUri)
-    .then(() => console.log("Connected to MongoDB"))
+    .then(async () => {
+        console.log("Connected to MongoDB");
+
+        // Clean up conflicting collections if they exist
+        try {
+            const db = mongoose.connection.db;
+            const collections = await db.listCollections().toArray();
+            const userCollections = collections.filter(col => col.name === 'users');
+
+            if (userCollections.length > 0) {
+                console.log("Found existing users collection, dropping it to fix schema mismatch...");
+                await db.dropCollection('users');
+                console.log("Dropped users collection. It will be recreated with correct schema.");
+            }
+        } catch (error) {
+            console.log("No existing users collection found or error during cleanup:", error.message);
+        }
+    })
     .catch(err => {
         console.error("MongoDB connection error:", err);
         process.exit(1);
